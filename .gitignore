@@ -21,3 +21,8 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# Ignore personal information
+/src/config.json
+/public/*.mp4
+/public/*.mov
