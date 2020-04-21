@@ -8,17 +8,19 @@ import './App.css'
 import Window from './Window'
 import marked from 'marked'
 import { applySpec } from 'ramda'
-import { nextStep } from '../state/action-creators'
-import { getCurrentGame, getCurrentGameConfig, getPlayState } from '../state/selectors'
+import * as actionCreators from '../state/action-creators'
+import { getCurrentGame, getCurrentGameConfig, getPlayState, getScores, getCurrentPlayer } from '../state/selectors'
 
 export default connect(
 	applySpec({
 		playState: getPlayState(),
 		game: getCurrentGame(),
 		gameConfig: getCurrentGameConfig(),
+		currentPlayer: getCurrentPlayer(),
+		scores: getScores(),
 	}),
-	{ nextStep },
-)(({ game, gameConfig, playState, nextStep }) => <>
+	actionCreators,
+)(({ game, gameConfig, playState, currentPlayer, scores, nextGame, startGame }) => <>
 	<Window>
 		{
 			playState === 'DESCRIPTION'
@@ -58,11 +60,32 @@ export default connect(
 					top: 98px;
 				`}>{game.info.name}</h1>
 				<game.components.Viewport config={gameConfig} />
+				<div css={css`
+					width: 100%;
+					height: 100px;
+					position: absolute;
+					left: 0px;
+					bottom: 0px;
+					display: flex;
+				`}>
+					{scores.map((score, i) => <div key={i} css={css`
+						flex: 1;
+						display: flex;
+						justify-content: center;
+						align-items: center;
+
+						background-color: ${i === currentPlayer ? 'papayawhip' : 'white'};
+					`}>{score}</div>)}
+				</div>
 			</div>
 		}
 	</Window>
 	<div>
-		<button onClick={() => nextStep()}>Verder</button>
+	{
+		playState === 'DESCRIPTION'
+		? <button onClick={() => startGame()}>Start spel</button>
+		: <button onClick={() => nextGame()}>Volgend spel</button>
+	}
 	</div>
 	{
 		playState === 'DESCRIPTION'

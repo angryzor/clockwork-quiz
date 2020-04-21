@@ -7,18 +7,19 @@ import { css, jsx } from '@emotion/core'
 import { times, pipe, pick } from 'ramda'
 import * as actionCreators from './action-creators'
 import { getCurrentGameState } from '../../state/selectors'
-
-const DIVIDER = 3
+import { isPointsQuestion } from './util'
 
 export const ControlPad = connect(
 	null,
 	actionCreators,
-)(({ previousQuestion, nextQuestion }) => <section css={css`
+)(({ previousQuestion, nextQuestion, correctAnswer, incorrectAnswer }) => <section css={css`
 	display: flex;
 	justify-content: space-between;
 `}>
 	<button onClick={() => previousQuestion()}>Vorige vraag</button>
 	<button onClick={() => nextQuestion()}>Volgende vraag</button>
+	<button onClick={() => correctAnswer()}>Correct answer</button>
+	<button onClick={() => incorrectAnswer()}>Incorrect answer</button>
 </section>)
 
 const stateStyle = state => {
@@ -39,7 +40,7 @@ const stateStyle = state => {
 }
 
 const RoundIndicator = ({ state, round }) => {
-	const isBigRound = (round + 1) % DIVIDER === 0
+	const isBigRound = isPointsQuestion(round)
 	const size = isBigRound ? 52 : 32
 
 	return <div css={css`

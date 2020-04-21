@@ -9,31 +9,45 @@ import { pipe, pick } from 'ramda'
 import { getCurrentGameState } from '../../state/selectors'
 import VideoPlayer from '../../components/VideoPlayer'
 
+const ControlsForPhase = ({ phase, selected, found, showAnswers, foundAnswer, start, stop, backToSelection, playPause }) => {
+}
+
 export const ControlPad = connect(
-	state => pipe(getCurrentGameState(), pick(['selected', 'found']))(state),
+	state => pipe(getCurrentGameState(), pick(['selected', 'found', 'phase']))(state),
 	actionCreators,
-)(({ config: { videos }, selected, found, playPause, chooseVideo, backToSelection, showAnswers, foundAnswer }) => <div>
-	{selected == null
-	? <ul>
-		{videos.map((video, i) => <li key={i} onClick={() => chooseVideo(video)}>{video.name}</li>)}
-	</ul>
-	: <>
-		<button onClick={() => playPause()}>Afspelen / Pauze</button>
-		<button onClick={() => showAnswers()}>Toon antwoorden</button>
-		<button onClick={() => backToSelection()}>Terug naar selectie</button>
-		{selected.answers.map(answer =>
-			<button css={{ display: 'block' }} key={answer} disabled={found[answer] || false} onClick={() => foundAnswer(answer)}>{answer}</button>
-		)}
-	</>}
-</div>)
+)(({ config: { videos }, phase, selected, found, playPause, chooseVideo, backToSelection, showAnswers, foundAnswer, start, stop }) => {
+	switch (phase) {
+		case 'PREROUND':
+			return <ul>
+				{videos.map((video, i) => <li key={i} onClick={() => chooseVideo(video)}>{video.name}</li>)}
+			</ul>
+		case 'VIDEO_PLAYING':
+			return <div>
+				<button onClick={() => playPause()}>Afspelen / Pauze</button>
+				<button onClick={() => showAnswers()}>Toon antwoorden</button>
+			</div>
+		case 'PLAYER_PREPARATION':
+			return <button onClick={() => start()}>START</button>
+		case 'THINKING':
+			return <div>
+				<button onClick={() => stop()}>STOP</button>
+				{selected.answers.map(answer =>
+					<button css={{ display: 'block' }} key={answer} disabled={found[answer] || false} onClick={() => foundAnswer(answer)}>{answer}</button>
+				)}
+			</div>
+		case 'POSTROUND':
+			return <button onClick={() => backToSelection()}>Terug naar selectie</button>
+		// no default
+	}
+})
 
 export const Viewport = connect(
-	state => pipe(getCurrentGameState(), pick(['selected', 'picked', 'playing', 'found', 'answersVisible']))(state),
-)(({ config: { videos }, selected, picked, playing, found, answersVisible }) => <article css={css`
+	state => pipe(getCurrentGameState(), pick(['selected', 'picked', 'playing', 'found', 'phase']))(state),
+)(({ config: { videos }, selected, picked, playing, found, phase }) => <article css={css`
 	width: 100%;
 	height: 100%;
 `}>
-	{selected == null
+	{phase === 'PREROUND'
 	? <div css={css`
 		width: 100%;
 		height: 100%;
@@ -53,7 +67,7 @@ export const Viewport = connect(
 					width: 100%;
 					height: 100%;
 					object-fit: cover;
-					${picked[video.name] ? { visibility: 'hidden' } : {}}
+					opacity: ${picked[video.name] ? 0.3 : 1};
 				`}>
 					<source src={video.videoUrl} type="video/mp4" />
 				</video>
@@ -65,6 +79,6 @@ export const Viewport = connect(
 		playing={playing}
 		answers={selected.answers.map((answer, i) => ({ name: answer, points: 20 }))}
 		found={found}
-		answersVisible={answersVisible}
+		answersVisible={phase !== 'VIDEO_PLAYING'}
 	/>}
 </article>)

@@ -1,16 +1,25 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import { Provider } from 'react-redux'
-import { createStore } from 'redux'
+import { createStore, applyMiddleware, compose } from 'redux'
+import { createEpicMiddleware } from 'redux-observable'
 import rootReducer from './state/reducer'
+import rootEpic from './state/effects'
 import './index.css'
 import App from './components/App'
 import * as serviceWorker from './serviceWorker'
 
+const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose
+
+const epicMiddleware = createEpicMiddleware()
 const store = createStore(
   rootReducer,
-  window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__(),
+  composeEnhancers(
+    applyMiddleware(epicMiddleware)
+  ),
 )
+
+epicMiddleware.run(rootEpic)
 
 ReactDOM.render(
   <React.StrictMode>
