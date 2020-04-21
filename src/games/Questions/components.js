@@ -2,28 +2,24 @@
 /** @jsxFrag React.Fragment */
 
 import React from 'react'
+import { connect } from 'react-redux'
 import { css, jsx } from '@emotion/core'
-import { times } from 'ramda'
+import { times, pipe, pick } from 'ramda'
+import * as actionCreators from './action-creators'
+import { getCurrentGameState } from '../../state/selectors'
 
 const DIVIDER = 3
 
-export const name = 'Ronde 3-6-9'
-
-export const description = `In deze ronde kunnen jullie seconden verdienen.
-
-Wanneer je groep een vraag goed beantwoordt blijven jullie aan de beurt. Antwoord je groep fout, dan gaat de vraag naar de volgende groep spelers.
-
-Als jullie vraag 3, 6, 9, 12, 15 of 18 juist beantwoorden, wordt je groep beloond met 20 seconden.`
-
-export const initialState = () => 2
-
-export const ControlPad = ({ config: { questions }, gameState, updateGameState }) => <section css={css`
+export const ControlPad = connect(
+	null,
+	actionCreators,
+)(({ previousQuestion, nextQuestion }) => <section css={css`
 	display: flex;
 	justify-content: space-between;
 `}>
-	<button onClick={() => updateGameState(Math.max(0, gameState - 1))}>Vorige vraag</button>
-	<button onClick={() => updateGameState(Math.min(questions.length - 1, gameState + 1))}>Volgende vraag</button>
-</section>
+	<button onClick={() => previousQuestion()}>Vorige vraag</button>
+	<button onClick={() => nextQuestion()}>Volgende vraag</button>
+</section>)
 
 const stateStyle = state => {
 	switch (state) {
@@ -62,7 +58,9 @@ const RoundIndicator = ({ state, round }) => {
 	`}>{round + 1}</div>
 }
 
-export const Viewport = ({ config: { questions }, gameState: currentRound }) => <article css={css`
+export const Viewport = connect(
+	state => pipe(getCurrentGameState(), pick(['currentQuestion']))(state),
+)(({ config: { questions }, currentQuestion }) => <article css={css`
 	display: flex;
 	flex-direction: column;
 `}>
@@ -78,18 +76,18 @@ export const Viewport = ({ config: { questions }, gameState: currentRound }) => 
 				background-color: orange;
 				flex: 1;
 			`}/>
-		</>, currentRound)}
-		<RoundIndicator state="CURRENT" round={currentRound} />
+		</>, currentQuestion)}
+		<RoundIndicator state="CURRENT" round={currentQuestion} />
 		{times(i => <>
 			<div css={css`
 				flex: 1;
 			`}/>
-			<RoundIndicator state="FUTURE" round={i + currentRound + 1} />
-		</>, questions.length - currentRound - 1)}
+			<RoundIndicator state="FUTURE" round={i + currentQuestion + 1} />
+		</>, questions.length - currentQuestion - 1)}
 	</section>
 	<section id="question" css={css`
 		flex: 1;
 		text-align: center;
 		font-size: 14pt;
-	`} dangerouslySetInnerHTML={{__html: questions[currentRound]}}/>
-</article>
+	`} dangerouslySetInnerHTML={{__html: questions[currentQuestion]}}/>
+</article>)

@@ -1,0 +1,5 @@
+export const PLAY_PAUSE = '[OpenDoor] Play / Pause'
+export const SHOW_ANSWERS = '[OpenDoor] Show answers'
+export const BACK_TO_SELECTION = '[OpenDoor] Back to selection'
+export const CHOOSE_VIDEO = '[OpenDoor] Choose video'
+export const TOGGLE_ANSWER = '[OpenDoor] Toggle answer'
