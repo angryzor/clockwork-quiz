@@ -23,24 +23,40 @@ export default connect(
 		{
 			playState === 'DESCRIPTION'
 			? <div css={css`
-				display: flex;
 				height: 100vh;
 				background-color: lightgrey;
 				flex-direction: column;
-				padding: 200px;
+				padding: 201px 244px;
 				font-family: Roboto;
 			`}>
-				<h1>{game.info.name}</h1>
-				<div dangerouslySetInnerHTML={{__html: marked(game.info.description)}} />
+				<h1 css={css`
+					margin-top: 0px;
+					margin-bottom: 88px;
+					font-size: 48px;
+					line-height: 56px;
+				`}>{game.info.name}</h1>
+				<div css={css`
+					font-size: 24px;
+					line-height: 32px;
+
+					> p {
+						margin-top: 48px;
+						margin-bottom: 48px;
+					}
+				`} dangerouslySetInnerHTML={{__html: marked(game.info.description)}} />
 			</div>
 			: <div css={css`
-				display: flex;
 				height: 100vh;
-				flex-direction: column;
+				padding: 80px 122px;
 			`}>
 				<h1 css={css`
 					display: block;
-				`}>{game.name}</h1>
+					font-size: 24px;
+					line-height: 28px;
+					position: absolute;
+					left: 122px;
+					top: 98px;
+				`}>{game.info.name}</h1>
 				<game.components.Viewport config={gameConfig} />
 			</div>
 		}

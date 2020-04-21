@@ -39,7 +39,8 @@ const stateStyle = state => {
 }
 
 const RoundIndicator = ({ state, round }) => {
-	const size = (round + 1) % DIVIDER === 0 ? 48 : 32
+	const isBigRound = (round + 1) % DIVIDER === 0
+	const size = isBigRound ? 52 : 32
 
 	return <div css={css`
 		box-sizing: border-box;
@@ -52,7 +53,8 @@ const RoundIndicator = ({ state, round }) => {
 		justify-content: center;
 
 		font-weight: 700;
-		font-size: 10pt;
+		font-size: ${isBigRound ? 18 : 14}px;
+		line-height: 28px;
 
 		${stateStyle(state)}
 	`}>{round + 1}</div>
@@ -61,33 +63,45 @@ const RoundIndicator = ({ state, round }) => {
 export const Viewport = connect(
 	state => pipe(getCurrentGameState(), pick(['currentQuestion']))(state),
 )(({ config: { questions }, currentQuestion }) => <article css={css`
-	display: flex;
-	flex-direction: column;
+	width: 100%;
+	height: 100%;
+	position: relative;
 `}>
 	<section id="round-indicator" css={css`
 		display: flex;
 		align-items: center;
-		margin: 100px;
+		position: absolute;
+		top: 89px;
+		left: 0px;
+		width: 100%;
 	`}>
-		{times(i => <>
+		{times(i => <React.Fragment key={i}>
 			<RoundIndicator state="PAST" round={i} />
 			<div css={css`
 				height: 2px;
 				background-color: orange;
 				flex: 1;
 			`}/>
-		</>, currentQuestion)}
+		</React.Fragment>, currentQuestion)}
 		<RoundIndicator state="CURRENT" round={currentQuestion} />
-		{times(i => <>
+		{times(i => <React.Fragment key={i}>
 			<div css={css`
 				flex: 1;
 			`}/>
 			<RoundIndicator state="FUTURE" round={i + currentQuestion + 1} />
-		</>, questions.length - currentQuestion - 1)}
+		</React.Fragment>, questions.length - currentQuestion - 1)}
 	</section>
 	<section id="question" css={css`
-		flex: 1;
-		text-align: center;
-		font-size: 14pt;
-	`} dangerouslySetInnerHTML={{__html: questions[currentQuestion]}}/>
+		width: 100%;
+		height: 100%;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+	`}>
+		<div css={css`
+			text-align: center;
+			font-size: 36px;
+			line-height: 46px;
+		`} dangerouslySetInnerHTML={{__html: questions[currentQuestion]}}/>
+	</section>
 </article>)

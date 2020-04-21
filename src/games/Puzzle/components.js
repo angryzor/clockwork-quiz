@@ -3,18 +3,16 @@
 import { useState } from 'react'
 import { connect } from 'react-redux'
 import { css, jsx } from '@emotion/core'
-import { map, chain, toPairs, pipe, pick } from 'ramda'
+import { map, chain, pipe, pick } from 'ramda'
 import shuffle from 'lodash.shuffle'
 import * as actionCreators from './action-creators'
 import { getCurrentGameState } from '../../state/selectors'
 
-const unfoldContexts = pipe(
-	toPairs,
-	chain(([answer, { color, contexts }]) => map(text => ({ answer, color, text }), contexts)),
-)
+const unfoldContexts = chain(({ name, color, contexts }) => map(text => ({ answer: name, color, text }), contexts))
 
 const Context = ({ text, disabled, color }) => <section css={css`
-	flex: 1 1 33%;
+	width: 244px;
+	height: 84px;
 	display: flex;
 	justify-content: center;
 	align-items: center;
@@ -22,9 +20,9 @@ const Context = ({ text, disabled, color }) => <section css={css`
 	transition-property: background-color;
 	transition-duration: 0.6s;
 
-	${disabled ? {} : css`
-		background-color: ${color};
-	`}
+	border: solid 12px white;
+
+	background-color: ${disabled ? 'white' : color};
 `}>
 	<p>{text}</p>
 </section>
@@ -33,36 +31,69 @@ export const ControlPad = connect(
 	state => pipe(getCurrentGameState(), pick(['found']))(state),
 	actionCreators,
 )(({ config: { answers }, found, toggleAnswer }) => <ul>
-	{[...Object.keys(answers)].map(answer => <label key={answer} css={{ display: 'block' }}><input
+	{answers.map(({ name }) => <label key={name} css={{ display: 'block' }}><input
 		type="checkbox"
-		value={found[answer] || false}
-		onChange={event => toggleAnswer(answer, event.target.checked)}
-	/>{answer}</label>)}
+		value={found[name] || false}
+		onChange={event => toggleAnswer(name, event.target.checked)}
+	/>{name}</label>)}
 </ul>)
 
 export const Viewport = connect(
 	state => pipe(getCurrentGameState(), pick(['found']))(state),
-)(({ config: { title, answers }, found }) => {
+)(({ config: { answers }, found }) => {
 	const [contexts] = useState(shuffle(unfoldContexts(answers)))
 
 	return <article css={css`
-		flex: 1;
+		width: 100%;
+		height: 100%;
 		display: flex;
-		flex-direction: column;
+		flex-direction: row;
+		padding: 122px;
 	`}>
-		<h1 css={css`
-			height: 60px;
-			margin: 0px;
-			flex: none;
-		`}>{title}</h1>
 		<div css={css`
 			flex: 1;
-			display: grid;
-			grid-template-columns: repeat(3, 1fr);
-			gap: 16px;
-			margin: 160px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
 		`}>
-			{contexts.map(({ answer, text, color }) => <Context key={text} text={text} color={color} disabled={!found[answer]} />)}
+			<div css={css`
+				grid-template-columns: repeat(3, 1fr);
+				gap: 1px;
+				display: grid;
+				background-color: lightgrey;
+				box-shadow: inset 0 0 0 12px white;
+			`}>
+				{contexts.map(({ answer, text, color }) => <Context key={text} text={text} color={color} disabled={!found[answer]} />)}
+			</div>
+		</div>
+		<div css={css`
+			width: 300px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			overflow: hidden;
+		`}>
+			<ul>
+				{answers.filter(({ name }) => found[name] || false).map(({ name, color }) =>
+					<li key={name} css={css`
+						list-style: none;
+						margin: 1em;
+
+						display: flex;
+						flex-direction: row;
+					`}>
+						<div css={css`
+							padding-right: 1em;
+						`}>20</div>
+						<div css={css`
+							flex: 1;
+							font-weight: 700;
+
+							color: ${color};
+						`}>{name}</div>
+					</li>
+				)}
+			</ul>
 		</div>
 	</article>
 })
