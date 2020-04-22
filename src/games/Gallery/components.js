@@ -9,22 +9,50 @@ import { pipe, pick } from 'ramda'
 import { getCurrentGameState } from '../../state/selectors'
 
 export const ControlPad = connect(
-	null,
+	state => pipe(getCurrentGameState(), pick(['currentSet', 'phase', 'found']))(state),
 	actionCreators,
-)(({ nextSet, nextPicture }) => <section>
-	<button onClick={() => nextSet()}>Next set</button>
-	<button onClick={() => nextPicture()}>Next picture</button>
-</section>)
+)(({ config: { sets }, currentSet, found, nextRound, previousPicture, nextPicture, start, stop, completionStart, completionStop, phase, correctAnswer, foundAnswer }) => {
+	switch (phase) {
+		case 'PREROUND':
+			return <section>
+				<button onClick={() => start()}>START</button>
+			</section>
+		case 'THINKING':
+			return <section>
+				<button onClick={() => correctAnswer()}>Correct answer</button>
+				<button onClick={() => stop()}>STOP / PAS</button>
+			</section>
+		case 'COMPLETION':
+			return <section>
+				<button onClick={() => completionStart()}>START</button>
+			</section>
+		case 'COMPLETION_THINKING':
+			return <section>
+				<button onClick={() => completionStop()}>STOP / PAS</button>
+				{sets[currentSet].map(({ name }) =>
+					<button css={{ display: 'block' }} key={name} disabled={found[name] || false} onClick={() => foundAnswer(name)}>{name}</button>
+				)}
+			</section>
+		case 'POSTROUND':
+			return <section>
+				<button onClick={() => nextRound()}>Volgende ronde</button>
+				<button onClick={() => previousPicture()}>Vorige afbeelding</button>
+				<button onClick={() => nextPicture()}>Volgende afbeelding</button>
+			</section>
+		// no default
+	}
+})
 
 export const Viewport = connect(
-	state => pipe(getCurrentGameState(), pick(['currentSet', 'currentImage']))(state),
-)(({ config, currentSet, currentImage }) => <section css={css`
+	state => pipe(getCurrentGameState(), pick(['currentSet', 'currentImage', 'phase']))(state),
+)(({ config, currentSet, currentImage, phase }) => <section css={css`
 	width: 100%;
 	height: 100%;
 	padding: 104px 122px;
 `}>
-	<img
-		src={config.sets[currentSet][currentImage]}
+	{phase === 'THINKING' || phase === 'POSTROUND'
+	? <img
+		src={config.sets[currentSet][currentImage].imageUrl}
 		alt="Question"
 		css={css`
 			width: 100%;
@@ -32,4 +60,5 @@ export const Viewport = connect(
 			object-fit: contain;
 		`}
 	/>
+	: <p>Veel geluk!</p>}
 </section>)

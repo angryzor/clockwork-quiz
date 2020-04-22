@@ -1,10 +1,17 @@
 import {
 	CHOOSE_VIDEO, PLAY_PAUSE, SHOW_ANSWERS, BACK_TO_SELECTION, FOUND_ANSWER, START, STOP, TO_POSTROUND,
 } from './actions'
-import { calculateNextPlayerMap, calculatePlayerOrder } from './util'
+import { calculateNextPlayerMap, calculatePlayerOrder } from '../player-order'
 import { without } from 'ramda'
 
-export default () => (state = { selected: null, picked: { }, phase: 'PREROUND' }, { type, payload }, { currentPlayer, scores }) => {
+export default () => (state, { type, payload }, { currentPlayer, scores }) => {
+	if (state === undefined) {
+		const playerOrder = calculatePlayerOrder(scores)
+		const nextPlayerMap = calculateNextPlayerMap(playerOrder)
+
+		state = { selected: null, picked: { }, phase: 'PREROUND', firstPlayer: playerOrder[0], nextPlayerMap }
+	}
+
 	switch (type) {
 		case CHOOSE_VIDEO:
 			return { ...state, selected: payload.video, picked: { ...state.picked, [payload.video.name]: true }, playing: false, phase: 'VIDEO_PLAYING', found: { } }

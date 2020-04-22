@@ -9,9 +9,6 @@ import { pipe, pick } from 'ramda'
 import { getCurrentGameState } from '../../state/selectors'
 import VideoPlayer from '../../components/VideoPlayer'
 
-const ControlsForPhase = ({ phase, selected, found, showAnswers, foundAnswer, start, stop, backToSelection, playPause }) => {
-}
-
 export const ControlPad = connect(
 	state => pipe(getCurrentGameState(), pick(['selected', 'found', 'phase']))(state),
 	actionCreators,
