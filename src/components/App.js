@@ -8,8 +8,7 @@ import Window from './Window'
 import marked from 'marked'
 import { applySpec } from 'ramda'
 import * as actionCreators from '../state/action-creators'
-import { getCurrentGame, getCurrentGameConfig, getPlayState, getScores, getCurrentPlayer } from '../state/selectors'
-import config from '../config'
+import { getCurrentGame, getCurrentGameConfig, getPlayState, getTeams, getCurrentPlayer } from '../state/selectors'
 
 export default connect(
 	applySpec({
@@ -17,10 +16,10 @@ export default connect(
 		game: getCurrentGame(),
 		gameConfig: getCurrentGameConfig(),
 		currentPlayer: getCurrentPlayer(),
-		scores: getScores(),
+		teams: getTeams(),
 	}),
 	actionCreators,
-)(({ game, gameConfig, playState, currentPlayer, scores, nextGame, startGame }) => <>
+)(({ game, gameConfig, playState, currentPlayer, teams, nextGame, startGame }) => <>
 	<Window>
 		{
 			playState === 'DESCRIPTION'
@@ -68,24 +67,24 @@ export default connect(
 					bottom: 0px;
 					display: flex;
 				`}>
-					{scores.map((score, i) => <div key={i} css={css`
+					{teams.map((team, i) => <div key={team.name} css={css`
 						flex: 1;
 						display: flex;
 						flex-direction: column;
 						justify-content: center;
 						align-items: center;
 
-						background-color: ${i === currentPlayer ? 'rgba(253, 230, 210)' : 'white'};
+						background-color: ${team.name === currentPlayer ? 'rgba(253, 230, 210)' : 'white'};
 					`}>
 						<div css={css`
 							margin-bottom: 16px;
 							font-size: 22px;
 							line-height: 25px;
-						`}>{score}</div>
+						`}>{team.score}</div>
 						<div css={css`
 							font-weight: 700;
-						`}>{config.teams[i].name}</div>
-						<div>{config.teams[i].members}</div>
+						`}>{team.name}</div>
+						<div>{team.members}</div>
 					</div>)}
 				</div>
 			</div>

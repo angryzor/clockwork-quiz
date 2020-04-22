@@ -1,12 +1,11 @@
 import { combineEpics, ofType } from 'redux-observable'
-import { withLatestFrom, concatMap, map } from 'rxjs/operators'
+import { withLatestFrom, concatMap } from 'rxjs/operators'
 import { from } from 'rxjs'
 import { nextQuestion } from './action-creators'
 import { getCurrentGameState, getCurrentPlayer } from '../../state/selectors'
 import { isPointsQuestion } from './util'
 import { switchPlayer, modifyScore, nextGame } from '../../state/action-creators'
 import { CORRECT_ANSWER, INCORRECT_ANSWER } from './actions'
-import config from '../../config'
 
 export default ({ questions }) => combineEpics(
 	(action$, state$) => action$.pipe(
@@ -25,6 +24,14 @@ export default ({ questions }) => combineEpics(
 	(action$, state$) => action$.pipe(
 		ofType(INCORRECT_ANSWER),
 		withLatestFrom(state$),
-		map(([, state]) => switchPlayer((getCurrentPlayer()(state) + 1) % config.teams.length)),
+		concatMap(([, state]) => {
+			const gameState = getCurrentGameState()(state)
+			const nextPlayer = gameState.nextPlayerMap.get(getCurrentPlayer()(state))
+
+			return [
+				switchPlayer(nextPlayer),
+				...nextPlayer === gameState.firstResponder ? [nextQuestion()] : [],
+			]
+		})
 	),
 )

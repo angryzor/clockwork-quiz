@@ -5,9 +5,9 @@ import shuffle from 'lodash.shuffle'
 
 const unfoldContexts = addIndex(chain)(({ name, contexts }, colorIndex) => map(text => ({ answer: name, colorIndex, text }), contexts))
 
-export default ({ puzzles }) => (state, { type, payload }, { scores }) => {
+export default ({ puzzles }) => (state, { type, payload }, { teams }) => {
 	if (state === undefined) {
-		const playerOrder = calculatePlayerOrder(scores)
+		const playerOrder = calculatePlayerOrder(teams)
 		const nextPlayerMap = calculateNextPlayerMap(playerOrder)
 
 		state = { currentPuzzle: 0, phase: 'PLAYER_PREPARATION', firstPlayer: playerOrder[0], nextPlayerMap, found: { }, contexts: shuffle(unfoldContexts(puzzles[0].answers)) }

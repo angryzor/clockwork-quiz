@@ -4,9 +4,9 @@ import {
 import { calculateNextPlayerMap, calculatePlayerOrder } from '../player-order'
 import { without } from 'ramda'
 
-export default () => (state, { type, payload }, { currentPlayer, scores }) => {
+export default () => (state, { type, payload }, { currentPlayer, teams }) => {
 	if (state === undefined) {
-		const playerOrder = calculatePlayerOrder(scores)
+		const playerOrder = calculatePlayerOrder(teams)
 		const nextPlayerMap = calculateNextPlayerMap(playerOrder)
 
 		state = { selected: null, picked: { }, phase: 'PREROUND', firstPlayer: playerOrder[0], nextPlayerMap }
@@ -23,7 +23,7 @@ export default () => (state, { type, payload }, { currentPlayer, scores }) => {
 				playing: false,
 				phase: 'PLAYER_PREPARATION',
 				currentMainPlayer: currentPlayer,
-				nextSubPlayerMap: calculateNextPlayerMap([currentPlayer, ...without([currentPlayer], calculatePlayerOrder(scores))]),
+				nextSubPlayerMap: calculateNextPlayerMap([currentPlayer, ...without([currentPlayer], calculatePlayerOrder(teams))]),
 			}
 		case START:
 			return { ...state, phase: 'THINKING' }

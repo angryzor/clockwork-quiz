@@ -2,9 +2,9 @@ import { NEXT_ROUND, PREVIOUS_PICTURE, NEXT_PICTURE, START, TO_POSTROUND, TO_COM
 import { calculateNextPlayerMap, calculatePlayerOrder } from '../player-order'
 import { without } from 'ramda'
 
-export default ({ sets }) => (state, { type, payload }, { currentPlayer, scores }) => {
+export default ({ sets }) => (state, { type, payload }, { currentPlayer, teams }) => {
 	if (state === undefined) {
-		const playerOrder = calculatePlayerOrder(scores)
+		const playerOrder = calculatePlayerOrder(teams)
 		const nextPlayerMap = calculateNextPlayerMap(playerOrder)
 
 		state = { currentSet: 0, currentImage: 0, phase: 'PREROUND', firstPlayer: playerOrder[0], nextPlayerMap }
@@ -18,7 +18,7 @@ export default ({ sets }) => (state, { type, payload }, { currentPlayer, scores 
 				...state,
 				phase: 'COMPLETION',
 				currentMainPlayer: currentPlayer,
-				nextSubPlayerMap: calculateNextPlayerMap([currentPlayer, ...without([currentPlayer], calculatePlayerOrder(scores))]),
+				nextSubPlayerMap: calculateNextPlayerMap([currentPlayer, ...without([currentPlayer], calculatePlayerOrder(teams))]),
 			}
 		case COMPLETION_START:
 			return { ...state, phase: 'COMPLETION_THINKING' }
