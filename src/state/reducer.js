@@ -1,5 +1,5 @@
 import {
-	NEXT_GAME, START_GAME, MODIFY_SCORE, SWITCH_PLAYER,
+	NEXT_GAME, START_GAME, MODIFY_SCORE, SWITCH_PLAYER, START_COUNTDOWN, STOP_COUNTDOWN,
 } from './actions'
 import { getCurrentGameReducer } from './selectors'
 import config from '../config'
@@ -11,6 +11,7 @@ const initialState = {
 	playState: 'DESCRIPTION',
 	currentPlayer: 0,
 	scores: config.teams.map(() => 60),
+	countingDown: false,
 }
 
 export default (state = initialState, { type, payload }) => {
@@ -23,6 +24,10 @@ export default (state = initialState, { type, payload }) => {
 			return { ...state, currentPlayer: payload.nextPlayer }
 		case MODIFY_SCORE:
 			return { ...state, scores: over(lensIndex(state.currentPlayer), add(payload.value), state.scores) }
+		case START_COUNTDOWN:
+			return { ...state, countingDown: true }
+		case STOP_COUNTDOWN:
+			return { ...state, countingDown: false }
 		default:
 			return { ...state, gameState: getCurrentGameReducer()(state)(state.gameState, { type, payload }, { currentPlayer: state.currentPlayer, scores: state.scores }) }
 	}

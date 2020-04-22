@@ -4,7 +4,6 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { jsx, css } from '@emotion/core'
-import './App.css'
 import Window from './Window'
 import marked from 'marked'
 import { applySpec } from 'ramda'
@@ -76,7 +75,7 @@ export default connect(
 						justify-content: center;
 						align-items: center;
 
-						background-color: ${i === currentPlayer ? 'papayawhip' : 'white'};
+						background-color: ${i === currentPlayer ? 'rgba(253, 230, 210)' : 'white'};
 					`}>
 						<div css={css`
 							margin-bottom: 16px;

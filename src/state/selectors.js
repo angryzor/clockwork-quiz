@@ -9,3 +9,4 @@ export const getCurrentGameReducer = () => state => getCurrentGame()(state).redu
 export const getCurrentGameRules = () => state => getCurrentGame()(state).rules(getCurrentGameConfig()(state))
 export const getCurrentPlayer = () => state => state.currentPlayer
 export const getScores = () => state => state.scores
+export const getCountingDown = () => state => state.countingDown
