@@ -1,9 +1,13 @@
 import { combineEpics, ofType } from 'redux-observable'
 import * as GameManager from './actions'
 import { getCurrentGameRules } from './selectors'
-import { withLatestFrom, switchMap, distinctUntilKeyChanged, map } from 'rxjs/operators'
+import { withLatestFrom, switchMap, distinctUntilKeyChanged, map, tap, ignoreElements } from 'rxjs/operators'
 import { never, interval } from 'rxjs'
 import { modifyScore, initializeGame } from './action-creators'
+import { Howl } from 'howler'
+import config from '../config'
+
+const nextGame = new Howl({ src: config.sounds.nextGame })
 
 export default combineEpics(
 	(action$) => action$.pipe(
@@ -22,5 +26,14 @@ export default combineEpics(
 	(action$) => action$.pipe(
 		ofType(GameManager.START_GAME),
 		map(() => initializeGame()),
+	),
+
+	(action$) => action$.pipe(
+		ofType(GameManager.NEXT_GAME),
+		tap(() => {
+			console.log('playing')
+			nextGame.play()
+		}),
+		ignoreElements(),
 	)
 )

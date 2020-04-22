@@ -10,23 +10,34 @@ import { getCurrentGameState } from '../../state/selectors'
 import VideoPlayer from '../../components/VideoPlayer'
 
 export const ControlPad = connect(
-	state => pipe(getCurrentGameState(), pick(['currentVideo', 'found']))(state),
+	state => pipe(getCurrentGameState(), pick(['currentVideo', 'found', 'phase']))(state),
 	actionCreators,
-)(({ config: { videos }, currentVideo, found, nextVideo, foundAnswer, showAnswers, playPause }) => <section>
-	<button onClick={() => nextVideo()}>Next video</button>
-	<button onClick={() => playPause()}>Afspelen / Pauze</button>
-	<button onClick={() => showAnswers()}>Toon antwoorden</button>
-	{videos[currentVideo].answers.map(answer =>
-		<button css={{ display: 'block' }} key={answer} disabled={found[answer] || false} onClick={() => foundAnswer(answer)}>{answer}</button>
-	)}
-</section>)
+)(({ config: { videos }, phase, currentVideo, found, playPause, nextRound, showAnswers, foundAnswer, start, stop }) => {
+	switch (phase) {
+		case 'VIDEO_PLAYING':
+			return <div>
+				<button onClick={() => playPause()}>Afspelen / Pauze</button>
+				<button onClick={() => showAnswers()}>Toon antwoorden</button>
+			</div>
+		case 'PLAYER_PREPARATION':
+			return <button onClick={() => start()}>START</button>
+		case 'THINKING':
+			return <div>
+				<button onClick={() => stop()}>STOP</button>
+				{videos[currentVideo].answers.map(answer =>
+					<button css={{ display: 'block' }} key={answer} disabled={found[answer] || false} onClick={() => foundAnswer(answer)}>{answer}</button>
+				)}
+			</div>
+		case 'POSTROUND':
+			return <button onClick={() => nextRound()}>Volgende ronde</button>
+		// no default
+	}
+})
 
 export const Viewport = connect(
-	state => pipe(getCurrentGameState(), pick(['currentVideo', 'playing', 'found', 'answersVisible']))(state),
-)(({ config: { videos }, currentVideo, playing, found, answersVisible }) => {
+	state => pipe(getCurrentGameState(), pick(['currentVideo', 'playing', 'found', 'points', 'phase']))(state),
+)(({ config: { videos }, currentVideo, playing, found, points, phase }) => {
 	const { answers, videoUrl, vertical } = videos[currentVideo]
-
-	console.log(videoUrl, answers)
 
 	return <article css={css`
 		flex: 1;
@@ -35,9 +46,9 @@ export const Viewport = connect(
 			videoUrl={videoUrl}
 			vertical={vertical}
 			playing={playing}
-			answers={answers.map((answer, i) => ({ name: answer, points: (i + 1) * 10 }))}
+			answers={answers.map((answer, i) => ({ name: answer, points: points[answer] }))}
 			found={found}
-			answersVisible={answersVisible}
+			answersVisible={phase !== 'VIDEO_PLAYING'}
 		/>
 	</article>
 })

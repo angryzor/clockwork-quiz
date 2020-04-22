@@ -6,7 +6,7 @@ import createCache from '@emotion/cache'
 class Window extends Component {
 	containerElement = document.createElement('div')
 	headElement = document.createElement('head')
-	emotionCache = createCache({ container: this.headElement, key: 'viewport' })
+	emotionCache = createCache({ container: this.headElement, key: 'viewport', speedy: false })
 	window = null
 
 	componentDidMount() {

@@ -1,9 +1,9 @@
 import { FOUND_ANSWER, START, STOP, NEXT_ROUND } from './actions'
 import { calculateNextPlayerMap, calculatePlayerOrder } from '../player-order'
-import { chain, map } from 'ramda'
+import { chain, map, addIndex } from 'ramda'
 import shuffle from 'lodash.shuffle'
 
-const unfoldContexts = chain(({ name, color, contexts }) => map(text => ({ answer: name, color, text }), contexts))
+const unfoldContexts = addIndex(chain)(({ name, contexts }, colorIndex) => map(text => ({ answer: name, colorIndex, text }), contexts))
 
 export default ({ puzzles }) => (state, { type, payload }, { scores }) => {
 	if (state === undefined) {

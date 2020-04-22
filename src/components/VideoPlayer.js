@@ -29,7 +29,7 @@ export default ({ playing, videoUrl, answers, found, answersVisible, vertical = 
 			transition-property: padding;
 			transition-duration: 0.4s;
 		`}>
-			<video key={videoUrl} controls ref={videoRef} css={css`
+			<video key={videoUrl} ref={videoRef} css={css`
 				width: 100%;
 				height: 100%;
 				object-fit: contain;
@@ -40,7 +40,7 @@ export default ({ playing, videoUrl, answers, found, answersVisible, vertical = 
 		<div css={css`
 			transition-property: width;
 			transition-duration: 0.4s;
-			width: ${answersVisible ? 300 : 0}px;
+			width: ${answersVisible ? 380 : 0}px;
 			display: flex;
 			align-items: center;
 			justify-content: center;
@@ -51,12 +51,20 @@ export default ({ playing, videoUrl, answers, found, answersVisible, vertical = 
 					<li key={name} css={css`
 						list-style: none;
 						margin: 1em;
+						width: 300px;
 
 						display: flex;
 						flex-direction: row;
 					`}>
 						<div css={css`
+							width: 32px;
+							text-align: right;
 							padding-right: 1em;
+
+							transition-property: opacity;
+							transition-duration: 0.6s;
+
+							opacity: ${points == null ? 0 : 1}
 						`}>{points}</div>
 						<div css={css`
 							flex: 1;

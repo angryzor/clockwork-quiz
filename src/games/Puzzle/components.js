@@ -6,6 +6,18 @@ import { pipe, pick } from 'ramda'
 import * as actionCreators from './action-creators'
 import { getCurrentGameState } from '../../state/selectors'
 
+const colors = [
+	'#F58220',
+	'#3DA4BF',
+	'#58595B',
+]
+
+const bgColors = [
+	'rgb(253, 230, 210)',
+	'rgb(216, 246, 232)',
+	'rgb(225, 225, 225)',
+]
+
 const Context = ({ text, disabled, color }) => <section css={css`
 	width: 244px;
 	height: 84px;
@@ -44,8 +56,8 @@ export const ControlPad = connect(
 })
 
 export const Viewport = connect(
-	state => pipe(getCurrentGameState(), pick(['found', 'phase', 'contexts', 'currentPuzzle']))(state),
-)(({ config: { puzzles }, found, contexts, phase, currentPuzzle }) => <article css={css`
+	state => pipe(getCurrentGameState(), pick(['found', 'contexts', 'currentPuzzle']))(state),
+)(({ config: { puzzles }, found, contexts, currentPuzzle }) => <article css={css`
 	width: 100%;
 	height: 100%;
 	display: flex;
@@ -65,7 +77,7 @@ export const Viewport = connect(
 			background-color: lightgrey;
 			box-shadow: inset 0 0 0 12px white;
 		`}>
-			{contexts.map(({ answer, text, color }) => <Context key={text} text={text} color={color} disabled={!found[answer]} />)}
+			{contexts.map(({ answer, text, colorIndex }) => <Context key={text} text={text} color={bgColors[colorIndex]} disabled={!found[answer]} />)}
 		</div>
 	</div>
 	<div css={css`
@@ -76,7 +88,7 @@ export const Viewport = connect(
 		overflow: hidden;
 	`}>
 		<ul>
-			{puzzles[currentPuzzle].answers.filter(({ name }) => found[name] || false).map(({ name, color }) =>
+			{puzzles[currentPuzzle].answers.filter(({ name }) => found[name] || false).map(({ name }, i) =>
 				<li key={name} css={css`
 					list-style: none;
 					margin: 1em;
@@ -91,7 +103,7 @@ export const Viewport = connect(
 						flex: 1;
 						font-weight: 700;
 
-						color: ${color};
+						color: ${colors[i]};
 					`}>{name}</div>
 				</li>
 			)}

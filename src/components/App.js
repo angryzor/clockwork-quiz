@@ -1,7 +1,7 @@
 /** @jsx jsx */
 /** @jsxFrag React.Fragment */
 
-import React, { useState } from 'react'
+import React from 'react'
 import { connect } from 'react-redux'
 import { jsx, css } from '@emotion/core'
 import './App.css'
@@ -10,6 +10,7 @@ import marked from 'marked'
 import { applySpec } from 'ramda'
 import * as actionCreators from '../state/action-creators'
 import { getCurrentGame, getCurrentGameConfig, getPlayState, getScores, getCurrentPlayer } from '../state/selectors'
+import config from '../config'
 
 export default connect(
 	applySpec({
@@ -71,11 +72,22 @@ export default connect(
 					{scores.map((score, i) => <div key={i} css={css`
 						flex: 1;
 						display: flex;
+						flex-direction: column;
 						justify-content: center;
 						align-items: center;
 
 						background-color: ${i === currentPlayer ? 'papayawhip' : 'white'};
-					`}>{score}</div>)}
+					`}>
+						<div css={css`
+							margin-bottom: 16px;
+							font-size: 22px;
+							line-height: 25px;
+						`}>{score}</div>
+						<div css={css`
+							font-weight: 700;
+						`}>{config.teams[i].name}</div>
+						<div>{config.teams[i].members}</div>
+					</div>)}
 				</div>
 			</div>
 		}

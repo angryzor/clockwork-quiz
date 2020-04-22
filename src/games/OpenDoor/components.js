@@ -15,9 +15,11 @@ export const ControlPad = connect(
 )(({ config: { videos }, phase, selected, found, playPause, chooseVideo, backToSelection, showAnswers, foundAnswer, start, stop }) => {
 	switch (phase) {
 		case 'PREROUND':
-			return <ul>
-				{videos.map((video, i) => <li key={i} onClick={() => chooseVideo(video)}>{video.name}</li>)}
-			</ul>
+			return <div>
+				{videos.map((video, i) =>
+					<button css={{ display: 'block' }} key={video.name} onClick={() => chooseVideo(video)}>{video.name}</button>
+				)}
+			</div>
 		case 'VIDEO_PLAYING':
 			return <div>
 				<button onClick={() => playPause()}>Afspelen / Pauze</button>

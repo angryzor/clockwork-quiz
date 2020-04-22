@@ -1,4 +1,7 @@
-export const NEXT_VIDEO = '[Collective Memory] Next video'
+export const NEXT_ROUND = '[Collective Memory] Next round'
 export const FOUND_ANSWER = '[Collective Memory] Found answer'
 export const PLAY_PAUSE = '[Collective Memory] Play / Pause'
 export const SHOW_ANSWERS = '[Collective Memory] Show answers'
+export const START = '[Collective Memory] Start'
+export const STOP = '[Collective Memory] Stop'
+export const TO_POSTROUND = '[Collective Memory] To PostRound'
