@@ -16,8 +16,6 @@ export const ControlPad = connect(
 	display: flex;
 	justify-content: space-between;
 `}>
-	<button onClick={() => previousQuestion()}>Vorige vraag</button>
-	<button onClick={() => nextQuestion()}>Volgende vraag</button>
 	<button onClick={() => correctAnswer()}>Correct answer</button>
 	<button onClick={() => incorrectAnswer()}>Incorrect answer</button>
 </section>)
