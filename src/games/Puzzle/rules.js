@@ -2,7 +2,7 @@ import { combineEpics, ofType } from 'redux-observable'
 import { map, concatMap, withLatestFrom } from 'rxjs/operators'
 import { FOUND_ANSWER, START, STOP, NEXT_ROUND } from './actions'
 import { switchPlayer, modifyScore, startCountdown, stopCountdown, nextGame } from '../../state/action-creators'
-import { INITIALIZE_GAME } from '../../state/actions'
+import { INITIALIZE_GAME, PLAYER_ELIMINATED } from '../../state/actions'
 import { getCurrentPlayer, getCurrentGameState } from '../../state/selectors'
 import { stop } from './action-creators'
 import { from } from 'rxjs'
@@ -51,4 +51,9 @@ export default ({ puzzles }) => combineEpics(
 		ofType(STOP),
 		map(() => stopCountdown())
 	),
+
+	(action$) => action$.pipe(
+		ofType(PLAYER_ELIMINATED),
+		map(() => stop())
+	)
 )

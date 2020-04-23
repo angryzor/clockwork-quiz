@@ -1,8 +1,9 @@
 import {
 	PLAY_PAUSE, SHOW_ANSWERS, NEXT_ROUND, FOUND_ANSWER, START, STOP, TO_POSTROUND,
 } from './actions'
-import { calculateNextPlayerMap, calculatePlayerOrder } from '../player-order'
+import { calculateNextPlayerMap, calculatePlayerOrder, dropPlayerFromNextPlayerMap } from '../player-order'
 import { without } from 'ramda'
+import { PLAYER_ELIMINATED } from '../../state/actions'
 
 export default ({ videos }) => (state, { type, payload }, { currentPlayer, teams }) => {
 	if (state === undefined) {
@@ -37,6 +38,8 @@ export default ({ videos }) => (state, { type, payload }, { currentPlayer, teams
 				found: { ...state.found, [payload.answer]: true },
 				points: { ...state.points, [payload.answer]: (Object.keys(state.found).length + 1) * 10 },
 			}
+		case PLAYER_ELIMINATED:
+			return { ...state, phase: 'PLAYER_PREPARATION', nextPlayerMap: dropPlayerFromNextPlayerMap(currentPlayer, state.nextPlayerMap) }
 		default:
 			return state
 	}

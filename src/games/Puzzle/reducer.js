@@ -1,11 +1,12 @@
 import { FOUND_ANSWER, START, STOP, NEXT_ROUND } from './actions'
-import { calculateNextPlayerMap, calculatePlayerOrder } from '../player-order'
+import { calculateNextPlayerMap, calculatePlayerOrder, dropPlayerFromNextPlayerMap } from '../player-order'
 import { chain, map, addIndex } from 'ramda'
 import shuffle from 'lodash.shuffle'
+import { PLAYER_ELIMINATED } from '../../state/actions'
 
 const unfoldContexts = addIndex(chain)(({ name, contexts }, colorIndex) => map(text => ({ answer: name, colorIndex, text }), contexts))
 
-export default ({ puzzles }) => (state, { type, payload }, { teams }) => {
+export default ({ puzzles }) => (state, { type, payload }, { currentPlayer, teams }) => {
 	if (state === undefined) {
 		const playerOrder = calculatePlayerOrder(teams)
 		const nextPlayerMap = calculateNextPlayerMap(playerOrder)
@@ -25,6 +26,8 @@ export default ({ puzzles }) => (state, { type, payload }, { teams }) => {
 		}
 		case FOUND_ANSWER:
 			return { ...state, found: { ...state.found, [payload.answer]: true } }
+		// case PLAYER_ELIMINATED:
+		// 	return { ...state, nextPlayerMap: dropPlayerFromNextPlayerMap(currentPlayer, state.nextPlayerMap) }
 		default:
 			return state
 	}

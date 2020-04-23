@@ -1,9 +1,9 @@
 import { combineEpics, ofType } from 'redux-observable'
 import * as GameManager from './actions'
-import { getCurrentGameRules } from './selectors'
-import { withLatestFrom, switchMap, distinctUntilKeyChanged, map, tap, ignoreElements } from 'rxjs/operators'
+import { getCurrentGameRules, getCurrentPlayerTeam } from './selectors'
+import { withLatestFrom, switchMap, distinctUntilKeyChanged, map, tap, ignoreElements, filter, concatMap } from 'rxjs/operators'
 import { never, interval } from 'rxjs'
-import { modifyScore, initializeGame } from './action-creators'
+import { modifyScore, initializeGame, playerEliminated, stopCountdown } from './action-creators'
 import { Howl } from 'howler'
 import config from '../config'
 
@@ -35,5 +35,12 @@ export default combineEpics(
 			nextGame.play()
 		}),
 		ignoreElements(),
-	)
+	),
+
+	(action$, state$) => action$.pipe(
+		ofType(GameManager.MODIFY_SCORE),
+		withLatestFrom(state$),
+		filter(([, state]) => getCurrentPlayerTeam()(state).score === 0),
+		concatMap(() => [stopCountdown(), playerEliminated()])
+	),
 )
