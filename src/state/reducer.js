@@ -6,9 +6,9 @@ import config from '../config'
 import * as L from 'partial.lenses'
 
 const initialState = {
-	currentGame: 0,
+	currentGame: -1,
 	gameState: undefined,
-	playState: 'DESCRIPTION',
+	phase: 'TITLE_SCREEN',
 	currentPlayer: config.teams[0].name,
 	teams: config.teams.map(team => ({ ...team, score: 5 })),
 	countingDown: false,
@@ -17,9 +17,9 @@ const initialState = {
 export default (state = initialState, { type, payload }) => {
 	switch (type) {
 		case NEXT_GAME:
-			return { ...state, currentGame: state.currentGame + 1, gameState: undefined, playState: 'DESCRIPTION' }
+			return { ...state, currentGame: state.currentGame + 1, gameState: undefined, phase: 'DESCRIPTION' }
 		case START_GAME:
-			return { ...state, playState: 'PLAYING', gameState: getCurrentGameReducer()(state)(undefined, { type, payload }, { currentPlayer: state.currentPlayer, teams: state.teams }) }
+			return { ...state, phase: 'PLAYING', gameState: getCurrentGameReducer()(state)(undefined, { type, payload }, { currentPlayer: state.currentPlayer, teams: state.teams }) }
 		case SWITCH_PLAYER:
 			return { ...state, currentPlayer: payload.nextPlayer }
 		case MODIFY_SCORE:
@@ -35,6 +35,6 @@ export default (state = initialState, { type, payload }) => {
 				gameState: getCurrentGameReducer()(state)(state.gameState, { type, payload }, { currentPlayer: state.currentPlayer, teams: state.teams })
 			}
 		default:
-			return { ...state, gameState: getCurrentGameReducer()(state)(state.gameState, { type, payload }, { currentPlayer: state.currentPlayer, teams: state.teams }) }
+			return { ...state, gameState: state.gameState === undefined ? undefined : getCurrentGameReducer()(state)(state.gameState, { type, payload }, { currentPlayer: state.currentPlayer, teams: state.teams }) }
 	}
 }

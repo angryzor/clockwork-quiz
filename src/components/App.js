@@ -8,22 +8,19 @@ import Window from './Window'
 import marked from 'marked'
 import { applySpec } from 'ramda'
 import * as actionCreators from '../state/action-creators'
-import { getCurrentGame, getCurrentGameConfig, getPlayState, getTeams, getCurrentPlayer } from '../state/selectors'
+import { getCurrentGame, getCurrentGameConfig, getPhase, getTeams, getCurrentPlayer } from '../state/selectors'
 
-export default connect(
+const IngameWindowContent = connect(
 	applySpec({
-		playState: getPlayState(),
 		game: getCurrentGame(),
 		gameConfig: getCurrentGameConfig(),
 		currentPlayer: getCurrentPlayer(),
 		teams: getTeams(),
 	}),
-	actionCreators,
-)(({ game, gameConfig, playState, currentPlayer, teams, nextGame, startGame }) => <>
-	<Window>
-		{
-			playState === 'DESCRIPTION'
-			? <div css={css`
+)(({ phase, game, gameConfig, currentPlayer, teams }) => {
+	switch (phase) {
+		case 'DESCRIPTION':
+			return <div css={css`
 				height: 100vh;
 				background-color: lightgrey;
 				flex-direction: column;
@@ -46,7 +43,8 @@ export default connect(
 					}
 				`} dangerouslySetInnerHTML={{__html: marked(game.info.description)}} />
 			</div>
-			: <div css={css`
+		case 'PLAYING':
+			return <div css={css`
 				height: 100vh;
 				padding: 80px 122px;
 			`}>
@@ -88,18 +86,75 @@ export default connect(
 					</div>)}
 				</div>
 			</div>
-		}
+		// no default
+	}
+})
+
+
+const WindowContent = connect(
+	applySpec({
+		phase: getPhase(),
+	}),
+)(({ phase }) => {
+	switch (phase) {
+		case 'TITLE_SCREEN':
+			return <div css={css`
+				height: 100vh;
+				background-color: black;
+				font-family: Roboto;
+				display: flex;
+				flex-direction: column;
+				justify-content: center;
+				align-items: center;
+			`}>
+				<p css={css`
+					font-size: 72px;
+					line-height: 84px;
+					color: white;
+					text-align: center;
+					margin-bottom: 0px;
+				`}>de <strong>SLIMSTE<br/>CLOCKWORKER</strong> ter wereld</p>
+				<p css={css`
+					font-size: 56px;
+					line-height: 66px;
+					color: #58595B;
+					text-align: center;
+				`}>quiz</p>
+			</div>
+		default:
+			return <IngameWindowContent phase={phase} />
+	}
+})
+
+const GameControlPadContent = connect(
+	applySpec({
+		game: getCurrentGame(),
+		gameConfig: getCurrentGameConfig(),
+	})
+)(({ game, gameConfig }) =>
+	<game.components.ControlPad config={gameConfig} />
+)
+
+const ControlPadContent = connect(
+	applySpec({
+		phase: getPhase(),
+	}),
+	actionCreators,
+)(({ phase, nextGame, startGame }) => {
+	switch (phase) {
+		case 'TITLE_SCREEN':
+			return <button css={{ display: 'block' }} onClick={() => nextGame()}>Start quiz!</button>
+		case 'DESCRIPTION':
+			return <button css={{ display: 'block' }} onClick={() => startGame()}>Start spel</button>
+		case 'PLAYING':
+			return <GameControlPadContent />
+		// no default
+	}
+})
+
+export default () => <>
+	<Window>
+		<WindowContent />
 	</Window>
-	<div>
-	{
-		playState === 'DESCRIPTION'
-		? <button onClick={() => startGame()}>Start spel</button>
-		: <button onClick={() => nextGame()}>Volgend spel</button>
-	}
-	</div>
-	{
-		playState === 'DESCRIPTION'
-		? <p>Not started yet</p>
-		: <game.components.ControlPad config={gameConfig} />
-	}
-</>)
+	<ControlPadContent />
+</>
