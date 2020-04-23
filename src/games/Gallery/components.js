@@ -36,9 +36,9 @@ export const ControlPad = connect(
 			</section>
 		case 'POSTROUND':
 			return <section>
-				<button onClick={() => nextRound()}>Volgende ronde</button>
-				<button onClick={() => previousPicture()}>Vorige afbeelding</button>
-				<button onClick={() => nextPicture()}>Volgende afbeelding</button>
+				<button css={{ display: 'block' }} onClick={() => nextRound()}>Volgende ronde</button>
+				<button css={{ display: 'block' }} onClick={() => previousPicture()}>Vorige afbeelding</button>
+				<button css={{ display: 'block' }} onClick={() => nextPicture()}>Volgende afbeelding</button>
 			</section>
 		// no default
 	}
@@ -61,5 +61,31 @@ export const Viewport = connect(
 			object-fit: contain;
 		`}
 	/>
-	: <p>Veel geluk!</p>}
+	: phase === 'PREROUND'
+	? <div css={css`
+		width: 100%;
+		height: 100%;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+	`}>
+		<h1 css={css`
+			font-size: 48px;
+			line-height: 56px;
+			color: #F58220;
+		`}>Galerij {currentSet + 1}</h1>
+	</div>
+	: <div css={css`
+		width: 100%;
+		height: 100%;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+	`}>
+		<h1 css={css`
+			font-size: 48px;
+			line-height: 56px;
+			color: #F58220;
+		`}>Aanvullingsronde</h1>
+	</div>}
 </section>)
