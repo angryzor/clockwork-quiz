@@ -59,16 +59,20 @@ export default ({ playing, videoUrl, answers, found, answersVisible, vertical = 
 						<div css={css`
 							width: 32px;
 							text-align: right;
-							padding-right: 1em;
+							padding-right: 2em;
 
 							transition-property: opacity;
 							transition-duration: 0.6s;
+							font-size: 20px;
+							line-height: 28px;
 
 							opacity: ${points == null ? 0 : 1}
 						`}>{points}</div>
 						<div css={css`
 							flex: 1;
 							font-weight: 700;
+							font-size: 24px;
+							line-height: 28px;
 							transition-property: filter;
 							transition-duration: 0.6s;
 

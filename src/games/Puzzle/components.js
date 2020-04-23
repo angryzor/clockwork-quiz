@@ -31,6 +31,9 @@ const Context = ({ text, disabled, color }) => <section css={css`
 	border: solid 12px white;
 
 	background-color: ${disabled ? 'white' : color};
+
+	font-size: 24px;
+	line-height: 28px;
 `}>
 	<p>{text}</p>
 </section>
@@ -95,13 +98,18 @@ export const Viewport = connect(
 
 					display: flex;
 					flex-direction: row;
+					align-items: center;
 				`}>
 					<div css={css`
 						padding-right: 1em;
+						font-size: 20px;
+						line-height: 28px;
 					`}>20</div>
 					<div css={css`
 						flex: 1;
 						font-weight: 700;
+						font-size: 32px;
+						line-height: 28px;
 
 						color: ${colors[i]};
 					`}>{name}</div>
