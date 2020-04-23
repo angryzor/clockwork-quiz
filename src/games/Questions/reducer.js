@@ -5,7 +5,7 @@ export default ({ questions }) => (state, { type, payload }, { currentPlayer, te
 	if (state === undefined) {
 		const nextPlayerMap = calculateNextPlayerMap(teams.map(team => team.name), true)
 
-		state = { currentQuestion: 0, firstPlayer: teams[0].name, nextPlayerMap }
+		state = { currentQuestion: 0, firstPlayer: teams[0].name, nextPlayerMap, firstResponder: currentPlayer }
 	}
 
 	switch (type) {

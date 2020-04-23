@@ -10,14 +10,14 @@ import { getCurrentGameState } from '../../state/selectors'
 import VideoPlayer from '../../components/VideoPlayer'
 
 export const ControlPad = connect(
-	state => pipe(getCurrentGameState(), pick(['selected', 'found', 'phase']))(state),
+	state => pipe(getCurrentGameState(), pick(['selected', 'found', 'phase', 'picked']))(state),
 	actionCreators,
-)(({ config: { videos }, phase, selected, found, playPause, chooseVideo, backToSelection, showAnswers, foundAnswer, start, stop }) => {
+)(({ config: { videos }, phase, selected, found, playPause, chooseVideo, backToSelection, showAnswers, foundAnswer, start, stop, picked }) => {
 	switch (phase) {
 		case 'PREROUND':
 			return <div>
 				{videos.map((video, i) =>
-					<button css={{ display: 'block' }} key={video.name} onClick={() => chooseVideo(video)}>{video.name}</button>
+					<button css={{ display: 'block' }} key={video.name} disabled={picked[video.name] || false} onClick={() => chooseVideo(video)}>{video.name}</button>
 				)}
 			</div>
 		case 'VIDEO_PLAYING':

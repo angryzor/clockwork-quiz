@@ -10,14 +10,12 @@ import { getCurrentGameState } from '../../state/selectors'
 import { isPointsQuestion } from './util'
 
 export const ControlPad = connect(
-	null,
+	state => pipe(getCurrentGameState(), pick(['currentQuestion']))(state),
 	actionCreators,
-)(({ previousQuestion, nextQuestion, correctAnswer, incorrectAnswer }) => <section css={css`
-	display: flex;
-	justify-content: space-between;
-`}>
+)(({ config: { questions }, currentQuestion, correctAnswer, incorrectAnswer }) => <section>
 	<button onClick={() => correctAnswer()}>Correct answer</button>
 	<button onClick={() => incorrectAnswer()}>Incorrect answer</button>
+	<div>Antwoord:<br/>{questions[currentQuestion].answer}</div>
 </section>)
 
 const stateStyle = state => {
@@ -101,6 +99,6 @@ export const Viewport = connect(
 			text-align: center;
 			font-size: 36px;
 			line-height: 46px;
-		`} dangerouslySetInnerHTML={{__html: questions[currentQuestion]}}/>
+		`} dangerouslySetInnerHTML={{__html: questions[currentQuestion].question}}/>
 	</section>
 </article>)

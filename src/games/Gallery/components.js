@@ -9,9 +9,9 @@ import { pipe, pick } from 'ramda'
 import { getCurrentGameState } from '../../state/selectors'
 
 export const ControlPad = connect(
-	state => pipe(getCurrentGameState(), pick(['currentSet', 'phase', 'found']))(state),
+	state => pipe(getCurrentGameState(), pick(['currentSet', 'currentImage', 'phase', 'found']))(state),
 	actionCreators,
-)(({ config: { sets }, currentSet, found, nextRound, previousPicture, nextPicture, start, stop, completionStart, completionStop, phase, correctAnswer, foundAnswer }) => {
+)(({ config: { sets }, currentSet, currentImage, found, nextRound, previousPicture, nextPicture, start, stop, completionStart, completionStop, phase, correctAnswer, foundAnswer }) => {
 	switch (phase) {
 		case 'PREROUND':
 			return <section>
@@ -21,6 +21,7 @@ export const ControlPad = connect(
 			return <section>
 				<button onClick={() => correctAnswer()}>Correct answer</button>
 				<button onClick={() => stop()}>STOP / PAS</button>
+				<div>Antwoord:<br/>{sets[currentSet][currentImage].name}</div>
 			</section>
 		case 'COMPLETION':
 			return <section>
