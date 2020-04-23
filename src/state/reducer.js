@@ -10,7 +10,7 @@ const initialState = {
 	gameState: undefined,
 	phase: 'TITLE_SCREEN',
 	currentPlayer: config.teams[0].name,
-	teams: config.teams.map(team => ({ ...team, score: 5 })),
+	teams: config.teams.map(team => ({ ...team, score: 90 })),
 	countingDown: false,
 }
 
