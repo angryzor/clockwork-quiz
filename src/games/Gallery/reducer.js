@@ -17,6 +17,7 @@ export default ({ sets }) => (state, { type, payload }, { currentPlayer, teams }
 				phase: 'THINKING',
 				currentMainPlayer: currentPlayer,
 				nextSubPlayerMap: calculateNextPlayerMap([currentPlayer, ...without([currentPlayer], calculatePlayerOrder(teams))]),
+				found: { },
 			}
 		case TO_COMPLETION:
 			return { ...state, phase: 'COMPLETION' }

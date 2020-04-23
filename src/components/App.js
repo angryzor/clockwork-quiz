@@ -6,7 +6,7 @@ import { connect } from 'react-redux'
 import { jsx, css } from '@emotion/core'
 import Window from './Window'
 import marked from 'marked'
-import { applySpec } from 'ramda'
+import { applySpec, sortBy } from 'ramda'
 import * as actionCreators from '../state/action-creators'
 import { getCurrentGame, getCurrentGameConfig, getPhase, getTeams, getCurrentPlayer } from '../state/selectors'
 
@@ -121,6 +121,34 @@ const WindowContent = connect(
 					text-align: center;
 				`}>quiz</p>
 			</div>
+		case 'POSTGAME_SCREEN':
+			return <div css={css`
+				height: 100vh;
+				background-color: lightgrey;
+				flex-direction: column;
+				padding: 201px 244px;
+				font-family: Roboto;
+			`}>
+				<h1 css={css`
+					margin-top: 0px;
+					margin-bottom: 88px;
+					font-size: 48px;
+					line-height: 56px;
+				`}>en het winnende team is...</h1>
+				<div css={css`
+					font-size: 24px;
+					line-height: 32px;
+
+					> p {
+						margin-top: 48px;
+						margin-bottom: 48px;
+					}
+				`}>
+					<p>Na een geweldige nek-aan-nek race zijn we bij het einde gekomen van dit spel en is het tijd om het winnende team aan te kondigen.</p>
+					<p>We willen alle deelnemers bedanken voor het meespelen met de eerste Clockwork Quiz. We hopen dat jullie ervan genoten hebben.</p>
+					<p>En dan nu - eindelijk - de winnaars...</p>
+				</div>
+			</div>
 		default:
 			return <IngameWindowContent phase={phase} />
 	}
@@ -130,7 +158,7 @@ const GameControlPadContent = connect(
 	applySpec({
 		game: getCurrentGame(),
 		gameConfig: getCurrentGameConfig(),
-	})
+	}),
 )(({ game, gameConfig }) =>
 	<game.components.ControlPad config={gameConfig} />
 )
@@ -138,12 +166,17 @@ const GameControlPadContent = connect(
 const ControlPadContent = connect(
 	applySpec({
 		phase: getPhase(),
+		teams: getTeams(),
 	}),
 	actionCreators,
-)(({ phase, nextGame, startGame }) => {
+)(({ phase, nextGame, startGame, teams }) => {
 	switch (phase) {
 		case 'TITLE_SCREEN':
 			return <button css={{ display: 'block' }} onClick={() => nextGame()}>Start quiz!</button>
+		case 'POSTGAME_SCREEN':
+			return <ul>
+				{sortBy(x => -x.score, teams).map(({ name, score }) => <li>{name}: {score}</li>)}
+			</ul>
 		case 'DESCRIPTION':
 			return <button css={{ display: 'block' }} onClick={() => startGame()}>Start spel</button>
 		case 'PLAYING':

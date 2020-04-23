@@ -17,7 +17,11 @@ const initialState = {
 export default (state = initialState, { type, payload }) => {
 	switch (type) {
 		case NEXT_GAME:
-			return { ...state, currentGame: state.currentGame + 1, gameState: undefined, phase: 'DESCRIPTION' }
+			if (state.currentGame === config.games.length - 1) {
+				return { ...state, phase: 'POSTGAME_SCREEN' }
+			} else {
+				return { ...state, currentGame: state.currentGame + 1, gameState: undefined, phase: 'DESCRIPTION' }
+			}
 		case START_GAME:
 			return { ...state, phase: 'PLAYING', gameState: getCurrentGameReducer()(state)(undefined, { type, payload }, { currentPlayer: state.currentPlayer, teams: state.teams }) }
 		case SWITCH_PLAYER:
