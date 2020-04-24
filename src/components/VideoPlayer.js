@@ -77,7 +77,7 @@ export default ({ playing, videoUrl, answers, found, answersVisible, vertical = 
 							transition-duration: 0.6s;
 
 							${found[name] ? {} : css`
-								filter: blur(5px);
+								filter: blur(15px);
 							`}
 						`}>{name}</div>
 					</li>
