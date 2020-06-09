@@ -4,7 +4,7 @@ import { from } from 'rxjs'
 import { nextQuestion } from './action-creators'
 import { getCurrentGameState, getCurrentPlayer } from '../../state/selectors'
 import { isPointsQuestion } from './util'
-import { switchPlayer, modifyScore, nextGame } from '../../state/action-creators'
+import { switchPlayer, modifyCurrentPlayerScore, nextGame } from '../../state/action-creators'
 import { CORRECT_ANSWER, INCORRECT_ANSWER } from './actions'
 
 export default ({ questions }) => combineEpics(
@@ -15,7 +15,7 @@ export default ({ questions }) => combineEpics(
 			const currentQuestion = getCurrentGameState()(state).currentQuestion
 
 			return from([
-				...isPointsQuestion(currentQuestion) ? [modifyScore(10)] : [],
+				...isPointsQuestion(currentQuestion) ? [modifyCurrentPlayerScore(10)] : [],
 				currentQuestion === questions.length - 1 ? nextGame() : nextQuestion(),
 			])
 		}),

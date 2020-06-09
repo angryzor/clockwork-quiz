@@ -1,9 +1,9 @@
 import { combineEpics, ofType } from 'redux-observable'
 import * as GameManager from './actions'
-import { getCurrentGameRules, getCurrentPlayerTeam } from './selectors'
-import { withLatestFrom, switchMap, distinctUntilKeyChanged, map, tap, ignoreElements, filter, concatMap } from 'rxjs/operators'
+import { getCurrentGameRules, getTeam, getCurrentPlayer } from './selectors'
+import { withLatestFrom, switchMap, distinctUntilKeyChanged, map, tap, ignoreElements, filter } from 'rxjs/operators'
 import { never, interval } from 'rxjs'
-import { modifyScore, initializeGame, playerEliminated, stopCountdown } from './action-creators'
+import { modifyCurrentPlayerScore, initializeGame, playerEliminated, modifyScore } from './action-creators'
 import { Howl } from 'howler'
 import config from '../config'
 
@@ -14,7 +14,7 @@ export default combineEpics(
 		ofType(GameManager.START_COUNTDOWN, GameManager.STOP_COUNTDOWN),
 		distinctUntilKeyChanged('type'),
 		switchMap(({ type }) => type === GameManager.START_COUNTDOWN ? interval(1000) : never()),
-		map(() => modifyScore(-1)),
+		map(() => modifyCurrentPlayerScore(-1)),
 	),
 
 	(action$, state$) => action$.pipe(
@@ -30,17 +30,20 @@ export default combineEpics(
 
 	(action$) => action$.pipe(
 		ofType(GameManager.NEXT_GAME),
-		tap(() => {
-			console.log('playing')
-			nextGame.play()
-		}),
+		tap(() => nextGame.play()),
 		ignoreElements(),
+	),
+
+	(action$, state$) => action$.pipe(
+		ofType(GameManager.MODIFY_CURRENT_PLAYER_SCORE),
+		withLatestFrom(state$),
+		map(([{ payload: { value } }, state]) => modifyScore(getCurrentPlayer()(state), value)),
 	),
 
 	(action$, state$) => action$.pipe(
 		ofType(GameManager.MODIFY_SCORE),
 		withLatestFrom(state$),
-		filter(([, state]) => getCurrentPlayerTeam()(state).score === 0),
-		concatMap(() => [stopCountdown(), playerEliminated()])
+		filter(([{ payload: { player } }, state]) => getTeam(player)(state).score === 0),
+		map(([{ payload: { player } }]) => playerEliminated(player))
 	),
 )

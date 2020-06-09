@@ -1,7 +1,7 @@
 import { combineEpics, ofType } from 'redux-observable'
 import { map, concatMap, withLatestFrom } from 'rxjs/operators'
 import { FOUND_ANSWER, START, STOP, TO_COMPLETION, NEXT_ROUND, COMPLETION_START, COMPLETION_STOP, CORRECT_ANSWER } from './actions'
-import { switchPlayer, modifyScore, startCountdown, stopCountdown, nextGame } from '../../state/action-creators'
+import { switchPlayer, modifyCurrentPlayerScore, startCountdown, stopCountdown, nextGame } from '../../state/action-creators'
 import { INITIALIZE_GAME, PLAYER_ELIMINATED } from '../../state/actions'
 import { getCurrentPlayer, getCurrentGameState } from '../../state/selectors'
 import { toPostRound, nextPicture, toCompletion } from './action-creators'
@@ -30,7 +30,7 @@ export default ({ sets }) => combineEpics(
 			const gameState = getCurrentGameState()(state)
 
 			return from([
-				modifyScore(10),
+				modifyCurrentPlayerScore(10),
 				...Object.keys(gameState.found).length === sets[gameState.currentSet].length
 					? [stopCountdown(), toPostRound()]
 					: [gameState.currentImage === sets[gameState.currentSet].length - 1 ? toCompletion() : nextPicture()],
@@ -88,7 +88,7 @@ export default ({ sets }) => combineEpics(
 			const gameState = getCurrentGameState()(state)
 
 			return from([
-				modifyScore(10),
+				modifyCurrentPlayerScore(10),
 				...Object.keys(gameState.found).length === sets[gameState.currentSet].length ? [stopCountdown(), toPostRound()] : [],
 			])
 		})
@@ -108,15 +108,15 @@ export default ({ sets }) => combineEpics(
 	(action$, state$) => action$.pipe(
 		ofType(PLAYER_ELIMINATED),
 		withLatestFrom(state$),
-		map(([, state]) => {
+		concatMap(([, state]) => {
 			const gameState = getCurrentGameState()(state)
 
 			if (gameState.phase === 'THINKING') {
-				return toPostRound()
+				return [stopCountdown(), toPostRound()]
 			} else { // COMPLETION_THINKING
 				const nextPlayer = gameState.nextSubPlayerMap.get(getCurrentPlayer()(state))
 
-				return nextPlayer == null ? toPostRound() : switchPlayer(nextPlayer)
+				return [stopCountdown(), nextPlayer == null ? toPostRound() : switchPlayer(nextPlayer)]
 			}
 		})
 	),

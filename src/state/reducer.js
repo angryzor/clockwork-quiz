@@ -4,6 +4,7 @@ import {
 import { getCurrentGameReducer } from './selectors'
 import config from '../config'
 import * as L from 'partial.lenses'
+import { take, pluck, prop, descend, sortWith } from 'ramda'
 
 const initialState = {
 	currentGame: -1,
@@ -20,14 +21,30 @@ export default (state = initialState, { type, payload }) => {
 			if (state.currentGame === config.games.length - 1) {
 				return { ...state, phase: 'POSTGAME_SCREEN' }
 			} else {
-				return { ...state, currentGame: state.currentGame + 1, gameState: undefined, phase: 'DESCRIPTION' }
+				const calcTeams = () => {
+					if (config.games[state.currentGame + 1].type !== 'finale') {
+						return state.teams
+					} else {
+						const highestTeams = take(2, pluck('name', sortWith([descend(prop('score'))], state.teams)))
+
+						return state.teams.filter(({ name }) => highestTeams.includes(name))
+					}
+				}
+
+				return {
+					...state,
+					currentGame: state.currentGame + 1,
+					gameState: undefined,
+					phase: 'DESCRIPTION',
+					teams: calcTeams(),
+				}
 			}
 		case START_GAME:
 			return { ...state, phase: 'PLAYING', gameState: getCurrentGameReducer()(state)(undefined, { type, payload }, { currentPlayer: state.currentPlayer, teams: state.teams }) }
 		case SWITCH_PLAYER:
 			return { ...state, currentPlayer: payload.nextPlayer }
 		case MODIFY_SCORE:
-			return { ...state, teams: L.modify([L.find(t => t.name === state.currentPlayer), 'score'], score => Math.max(0, score + payload.value), state.teams) }
+			return { ...state, teams: L.modify([L.find(t => t.name === payload.player), 'score'], score => Math.max(0, score + payload.value), state.teams) }
 		case START_COUNTDOWN:
 			return { ...state, countingDown: true }
 		case STOP_COUNTDOWN:
@@ -35,7 +52,7 @@ export default (state = initialState, { type, payload }) => {
 		case PLAYER_ELIMINATED:
 			return {
 				...state,
-				teams: L.remove(L.find(t => t.name === state.currentPlayer), state.teams),
+				teams: L.remove(L.find(t => t.name === payload.player), state.teams),
 				gameState: getCurrentGameReducer()(state)(state.gameState, { type, payload }, { currentPlayer: state.currentPlayer, teams: state.teams })
 			}
 		default:

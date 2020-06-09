@@ -9,6 +9,7 @@ import marked from 'marked'
 import { applySpec, sortBy } from 'ramda'
 import * as actionCreators from '../state/action-creators'
 import { getCurrentGame, getCurrentGameConfig, getPhase, getTeams, getCurrentPlayer } from '../state/selectors'
+import config from '../config'
 
 const IngameWindowContent = connect(
 	applySpec({
@@ -180,7 +181,10 @@ const ControlPadContent = connect(
 		case 'DESCRIPTION':
 			return <button css={{ display: 'block' }} onClick={() => startGame()}>Start spel</button>
 		case 'PLAYING':
-			return <GameControlPadContent />
+			return <>
+				{config.debug ? <button css={{ display: 'block' }} onClick={() => nextGame()}>Next Game</button> : null}
+				<GameControlPadContent />
+			</>
 		// no default
 	}
 })
