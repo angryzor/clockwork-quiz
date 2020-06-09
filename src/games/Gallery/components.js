@@ -53,7 +53,7 @@ export const Viewport = connect(
 `}>
 	{phase === 'THINKING' || phase === 'POSTROUND'
 	? <img
-		src={config.sets[currentSet][currentImage].imageUrl}
+		src={phase === 'POSTROUND' && config.sets[currentSet][currentImage].answerImageUrl != null ? config.sets[currentSet][currentImage].answerImageUrl : config.sets[currentSet][currentImage].imageUrl}
 		alt="Question"
 		css={css`
 			width: 100%;

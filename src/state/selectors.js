@@ -13,3 +13,4 @@ export const getTeams = () => state => state.teams
 export const getCountingDown = () => state => state.countingDown
 export const getTeam = name => state => state.teams.find(t => t.name === name)
 export const getCurrentPlayerTeam = () => state => getTeam(state.currentPlayer)(state)
+export const getNamesVisible = () => state => state.namesVisible

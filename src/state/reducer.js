@@ -1,5 +1,5 @@
 import {
-	NEXT_GAME, START_GAME, MODIFY_SCORE, SWITCH_PLAYER, START_COUNTDOWN, STOP_COUNTDOWN, PLAYER_ELIMINATED,
+	NEXT_GAME, START_GAME, MODIFY_SCORE, SWITCH_PLAYER, START_COUNTDOWN, STOP_COUNTDOWN, PLAYER_ELIMINATED, REVEAL_WINNERS, REVEAL_NAMES,
 } from './actions'
 import { getCurrentGameReducer } from './selectors'
 import config from '../config'
@@ -11,8 +11,9 @@ const initialState = {
 	gameState: undefined,
 	phase: 'TITLE_SCREEN',
 	currentPlayer: config.teams[0].name,
-	teams: config.teams.map(team => ({ ...team, score: 90 })),
+	teams: config.teams,
 	countingDown: false,
+	namesVisible: false,
 }
 
 export default (state = initialState, { type, payload }) => {
@@ -49,12 +50,22 @@ export default (state = initialState, { type, payload }) => {
 			return { ...state, countingDown: true }
 		case STOP_COUNTDOWN:
 			return { ...state, countingDown: false }
-		case PLAYER_ELIMINATED:
-			return {
-				...state,
-				teams: L.remove(L.find(t => t.name === payload.player), state.teams),
-				gameState: getCurrentGameReducer()(state)(state.gameState, { type, payload }, { currentPlayer: state.currentPlayer, teams: state.teams })
+		case PLAYER_ELIMINATED: {
+			const teams = L.remove(L.find(t => t.name === payload.player), state.teams)
+
+			if (teams.length === 1) {
+				return { ...state, phase: 'POSTGAME_SCREEN', teams }
+			} else {
+				return {
+					...state,
+					teams,
+					gameState: getCurrentGameReducer()(state)(state.gameState, { type, payload }, { currentPlayer: state.currentPlayer, teams: state.teams })
+				}
 			}
+		}
+		case REVEAL_NAMES:
+			return { ...state, namesVisible: true }
+
 		default:
 			return { ...state, gameState: state.gameState === undefined ? undefined : getCurrentGameReducer()(state)(state.gameState, { type, payload }, { currentPlayer: state.currentPlayer, teams: state.teams }) }
 	}

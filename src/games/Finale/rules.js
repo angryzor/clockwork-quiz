@@ -1,7 +1,7 @@
 import { combineEpics, ofType } from 'redux-observable'
 import { map, concatMap, withLatestFrom, filter } from 'rxjs/operators'
 import { FOUND_ANSWER, START, STOP, NEXT_ROUND } from './actions'
-import { switchPlayer, startCountdown, stopCountdown, nextGame, modifyScore } from '../../state/action-creators'
+import { switchPlayer, startCountdown, stopCountdown, nextGame, modifyScore, correctSound } from '../../state/action-creators'
 import { INITIALIZE_GAME, PLAYER_ELIMINATED } from '../../state/actions'
 import { getCurrentPlayer, getCurrentGameState, getTeams } from '../../state/selectors'
 import { toPostRound } from './action-creators'
@@ -29,6 +29,7 @@ export default ({ questions }) => combineEpics(
 			return from([
 				...teams.filter(({ name }) => name !== player).map(({ name }) => modifyScore(name, -20)),
 				...Object.keys(gameState.found).length === questions[gameState.currentQuestion].answers.length ? [stopCountdown(), toPostRound()] : [],
+				correctSound(),
 			])
 		}),
 	),

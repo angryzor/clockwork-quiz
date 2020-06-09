@@ -21,7 +21,7 @@ export default ({ questions }) => (state, { type, payload }, { currentPlayer, te
 			], teams))
 			const nextPlayerMap = calculateNextPlayerMap(playerOrder)
 
-			return { ...state, phase: 'PREROUND', currentQuestion: state.currentQuestion + 1, playerOrder, nextPlayerMap }
+			return { ...state, phase: 'PREROUND', currentQuestion: state.currentQuestion + 1, playerOrder, nextPlayerMap, found: { } }
 		}
 		case START:
 			return { ...state, phase: 'THINKING' }

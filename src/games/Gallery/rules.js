@@ -1,7 +1,7 @@
 import { combineEpics, ofType } from 'redux-observable'
 import { map, concatMap, withLatestFrom } from 'rxjs/operators'
 import { FOUND_ANSWER, START, STOP, TO_COMPLETION, NEXT_ROUND, COMPLETION_START, COMPLETION_STOP, CORRECT_ANSWER } from './actions'
-import { switchPlayer, modifyCurrentPlayerScore, startCountdown, stopCountdown, nextGame } from '../../state/action-creators'
+import { switchPlayer, modifyCurrentPlayerScore, startCountdown, stopCountdown, nextGame, correctSound } from '../../state/action-creators'
 import { INITIALIZE_GAME, PLAYER_ELIMINATED } from '../../state/actions'
 import { getCurrentPlayer, getCurrentGameState } from '../../state/selectors'
 import { toPostRound, nextPicture, toCompletion } from './action-creators'
@@ -34,6 +34,7 @@ export default ({ sets }) => combineEpics(
 				...Object.keys(gameState.found).length === sets[gameState.currentSet].length
 					? [stopCountdown(), toPostRound()]
 					: [gameState.currentImage === sets[gameState.currentSet].length - 1 ? toCompletion() : nextPicture()],
+				correctSound(),
 			])
 		})
 	),
@@ -90,6 +91,7 @@ export default ({ sets }) => combineEpics(
 			return from([
 				modifyCurrentPlayerScore(10),
 				...Object.keys(gameState.found).length === sets[gameState.currentSet].length ? [stopCountdown(), toPostRound()] : [],
+				correctSound(),
 			])
 		})
 	),

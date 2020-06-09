@@ -7,3 +7,5 @@ export const MODIFY_CURRENT_PLAYER_SCORE = '[Game Manager] Modify current player
 export const SWITCH_PLAYER = '[Game Manager] Switch player'
 export const INITIALIZE_GAME = '[Game Manager] Initialize game'
 export const PLAYER_ELIMINATED = '[Game Manager] Player eliminated'
+export const CORRECT_SOUND = '[Game Manager] Correct sound'
+export const REVEAL_NAMES = '[Game Manager] Reveal names'
