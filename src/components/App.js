@@ -8,17 +8,18 @@ import Window from './Window'
 import marked from 'marked'
 import { applySpec, sortBy } from 'ramda'
 import * as actionCreators from '../state/action-creators'
-import { getCurrentGame, getCurrentGameConfig, getPhase, getTeams, getCurrentPlayer } from '../state/selectors'
+import { getCurrentGame, getCurrentGameConfig, getCurrentGameType, getPhase, getTeams, getCurrentPlayer } from '../state/selectors'
 import config from '../config'
 
 const IngameWindowContent = connect(
 	applySpec({
 		game: getCurrentGame(),
 		gameConfig: getCurrentGameConfig(),
+		gameType: getCurrentGameType(),
 		currentPlayer: getCurrentPlayer(),
 		teams: getTeams(),
 	}),
-)(({ phase, game, gameConfig, currentPlayer, teams }) => {
+)(({ phase, game, gameConfig, gameType, currentPlayer, teams }) => {
 	switch (phase) {
 		case 'DESCRIPTION':
 			return <div css={css`
@@ -58,7 +59,7 @@ const IngameWindowContent = connect(
 					top: 98px;
 				`}>{game.info.name}</h1>
 				<game.components.Viewport config={gameConfig} />
-				<div css={css`
+				{gameType === 'finale' ? null : <div css={css`
 					width: 100%;
 					height: 100px;
 					position: absolute;
@@ -85,7 +86,7 @@ const IngameWindowContent = connect(
 						`}>{team.name}</div>
 						<div>{team.members}</div>
 					</div>)}
-				</div>
+				</div>}
 			</div>
 		// no default
 	}

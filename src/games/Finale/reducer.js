@@ -3,7 +3,7 @@ import {
 } from './actions'
 import { calculateNextPlayerMap, calculatePlayerOrder, dropPlayerFromNextPlayerMap } from '../player-order'
 import { PLAYER_ELIMINATED } from '../../state/actions'
-import { pluck, sortWith, ascend, prop, descend, flip, indexOf } from 'ramda'
+import { pluck, sortWith, ascend, prop, descend, indexOf } from 'ramda'
 
 export default ({ questions }) => (state, { type, payload }, { currentPlayer, teams }) => {
 	if (state === undefined) {
@@ -17,7 +17,7 @@ export default ({ questions }) => (state, { type, payload }, { currentPlayer, te
 		case NEXT_ROUND: {
 			const playerOrder = pluck('name', sortWith([
 				ascend(prop('score')),
-				...state.currentQuestion === 0 ? [] : [descend(flip(indexOf)(state.lastOrder))],
+				descend(team => indexOf(team.name, state.playerOrder)),
 			], teams))
 			const nextPlayerMap = calculateNextPlayerMap(playerOrder)
 
