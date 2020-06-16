@@ -1,4 +1,4 @@
-import config from '../config'
+import config from 'config'
 import { getGame } from '../games'
 
 export const getPhase = () => state => state.phase

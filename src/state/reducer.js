@@ -2,7 +2,7 @@ import {
 	NEXT_GAME, START_GAME, MODIFY_SCORE, SWITCH_PLAYER, START_COUNTDOWN, STOP_COUNTDOWN, PLAYER_ELIMINATED, REVEAL_WINNERS, REVEAL_NAMES,
 } from './actions'
 import { getCurrentGameReducer } from './selectors'
-import config from '../config'
+import config from 'config'
 import * as L from 'partial.lenses'
 import { take, pluck, prop, descend, sortWith } from 'ramda'
 

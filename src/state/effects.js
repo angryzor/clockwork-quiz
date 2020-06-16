@@ -5,7 +5,7 @@ import { withLatestFrom, switchMap, distinctUntilKeyChanged, map, tap, ignoreEle
 import { never, interval } from 'rxjs'
 import { modifyCurrentPlayerScore, initializeGame, playerEliminated, modifyScore, stopCountdown } from './action-creators'
 import { Howl } from 'howler'
-import config from '../config'
+import config from 'config'
 
 const nextGame = new Howl({ src: config.sounds.nextGame })
 const clockStart = new Howl({ src: config.sounds.clockStart })

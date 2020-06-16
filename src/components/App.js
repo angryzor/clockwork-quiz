@@ -9,7 +9,7 @@ import marked from 'marked'
 import { applySpec, sortBy } from 'ramda'
 import * as actionCreators from '../state/action-creators'
 import { getCurrentGame, getCurrentGameConfig, getCurrentGameType, getPhase, getTeams, getCurrentPlayer, getNamesVisible } from '../state/selectors'
-import config from '../config'
+import config from 'config'
 
 const IngameWindowContent = connect(
 	applySpec({

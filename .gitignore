@@ -23,6 +23,6 @@ yarn-debug.log*
 yarn-error.log*
 
 # Ignore personal information
-/src/config.json
+/public/config.js
 /public/media
 
